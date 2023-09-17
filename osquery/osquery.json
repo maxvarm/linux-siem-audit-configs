@@ -1,0 +1,113 @@
+{
+    "options": {
+        "verbose": false,
+        "worker_threads": 4,
+        "schedule_splay_percent": 15
+    },
+    "schedule": {
+        "audit-user": {
+            "query": "SELECT uid, gid, username, description, directory, shell FROM users WHERE shell!='/bin/false';",
+            "interval": 60
+        },
+        "audit-sshkey": {
+            "query": "SELECT uid, username, algorithm, directory, comment, options FROM authorized_keys JOIN users USING(uid) WHERE username LIKE '%';",
+            "interval": 60
+        },
+        "audit-cronjob": {
+            "query": "SELECT minute, hour, day_of_month, month, day_of_week, command, path FROM crontab;",
+            "removed": false,
+            "interval": 60
+        },
+        "audit-systemd": {
+            "query": "SELECT user AS username, fragment_path AS path, description FROM systemd_units WHERE id LIKE '%.service' AND load_state='loaded';",
+            "removed": false,
+            "interval": 60
+        },
+        "event-fim": {
+            "query": "SELECT time, uid, action, category, sha1, mode, atime, ctime, mtime, size, target_path FROM file_events WHERE action IN ('CREATED', 'UPDATED', 'DELETED') AND uid!='';",
+            "interval": 10
+        },
+        "event-exec": {
+            "query": "SELECT time, uid, username, pid, path, cmdline, TRIM(cwd, '\"') as cwd, sha1, parent AS ppid FROM process_events AS p JOIN hash USING(path) JOIN users USING(uid) WHERE syscall IN ('execve', 'execveat');",
+            "interval": 10
+        }
+    },
+    "file_paths": {
+        "fim-authmodule": ["/etc/pam.d/%%"],
+        "fim-rootkit": ["/etc/ld.so.preload"],
+        "fim-bootkit": [
+            "/boot/efi/%%",
+            "/etc/grub.d/%%",
+            "/etc/default/grub"
+        ],
+        "fim-ldconfig": [
+            "/etc/ld.so.conf",
+            "/etc/ld.so.conf.d/%%"
+        ],
+        "fim-initmsg": [
+            "/etc/motd",
+            "/etc/issue",
+            "/etc/issue.net",
+            "/etc/update-motd.d"
+        ],
+        "fim-initscript": [
+            "/etc/rc.local",
+            "/etc/rc.common",
+            "/etc/init/%%",
+            "/etc/init.d/%%",
+            "/etc/inittab"
+        ],
+        "fim-sshconfig": [
+            "/etc/ssh/sshd_config.d/%%",
+            "/etc/ssh/sshd_config"
+        ],
+        "fim-sshbinary": [
+            "/usr/bin/scp",
+            "/usr/bin/ssh",
+            "/usr/bin/sftp",
+            "/usr/bin/rsync",
+            "/usr/sbin/sshd"
+        ],
+        "fim-profile": [
+            "/etc/profile.d/%%",
+            "/etc/shells",
+            "/etc/bashrc",
+            "/etc/profile",
+            "/etc/bash.bashrc",
+            "/root/.bash_profile",
+            "/root/.bash_login",
+            "/root/.bash_logout",
+            "/root/.profile",
+            "/root/.bashrc",
+            "/home/%/.bash_profile",
+            "/home/%/.bash_login",
+            "/home/%/.bash_logout",
+            "/home/%/.profile",
+            "/home/%/.bashrc"
+        ],
+        "fim-shadow": [
+            "/etc/shadow",
+            "/etc/gshadow"
+        ],
+        "fim-sudoers": [
+            "/etc/sudoers",
+            "/etc/sudoers.d/%%"
+        ],
+        "fim-netconfig": [
+            "/etc/netplan/%%",
+            "/etc/hosts",
+            "/etc/resolv.conf",
+            "/etc/nsswitch.conf",
+            "/etc/network/interfaces"
+        ],
+        "fim-sysconfig": [
+            "/etc/fstab",
+            "/etc/mtab",
+            "/etc/environment",
+            "/etc/login.defs",
+            "/etc/sysctl.conf",
+            "/etc/security/%%",
+            "/etc/sysctl.d/%%"
+        ]
+    }
+}

@@ -1,0 +1,373 @@
+# Remove any existing rules
+-D
+# Buffer Size
+-b 8192
+# Failure Mode (1 - print a failure message)
+-f 1
+# Ignore Errors (missing users or folders)
+-i
+
+# ------------------------ Filters: Exclusions ------------------------
+
+# Exclude unused message types
+-a never,exclude -F msgtype=EOE
+-a never,exclude -F msgtype=AVC
+-a never,exclude -F msgtype=SOCKADDR
+-a never,exclude -F msgtype=CRED_ACQ
+-a never,exclude -F msgtype=CRED_DISP
+-a never,exclude -F msgtype=BPRM_FCAPS
+-a never,exclude -F msgtype=USER_ACCT
+-a never,exclude -F msgtype=USER_START
+-a never,exclude -F msgtype=USER_END
+-a never,exclude -F msgtype=CRYPTO_KEY_USER
+
+# Exclude files that change too often
+# -a never,exclude -F arch=b32 -S openat -S open -F path=<absolute-file-path>
+# -a never,exclude -F arch=b64 -S openat -S open -F path=<absolute-file-path>
+# Exclude processes that spam a lot
+# -a never,exclude -F arch=b32 -S execve -S execveat -F exe=<absolute-binary-path>
+# -a never,exclude -F arch=b64 -S execve -S execveat -F exe=<absolute-binary-path>
+
+# ------------------------ Filters: File Integrity ------------------------
+
+# FIM: Pam.d auth modules modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/pam.d -F perm=w -F key=fim-authmodule
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/pam.d -F perm=w -F key=fim-authmodule
+
+# FIM: Rootkit-related file modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/ld.so.preload -F perm=w -F key=fim-rootkit
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/ld.so.preload -F perm=w -F key=fim-rootkit
+
+# FIM: Grub or EFI modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/boot/efi -F perm=w -F key=fim-bootkit
+-a always,exit -F arch=b64 -S openat -S open -F dir=/boot/efi -F perm=w -F key=fim-bootkit
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/grub.d -F perm=w -F key=fim-bootkit
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/grub.d -F perm=w -F key=fim-bootkit
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/default/grub -F perm=w -F key=fim-bootkit
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/default/grub -F perm=w -F key=fim-bootkit
+
+# FIM: Library search paths changes
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/ld.so.conf -F perm=w -F key=fim-ldconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/ld.so.conf -F perm=w -F key=fim-ldconfig
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/ld.so.conf.d -F perm=w -F key=fim-ldconfig
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/ld.so.conf.d -F perm=w -F key=fim-ldconfig
+
+# FIM: Motd or greeting text modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/motd -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/motd -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/issue -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/issue -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/issue.net -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/issue.net -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/update-motd.d -F perm=w -F key=fim-initmsg
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/update-motd.d -F perm=w -F key=fim-initmsg
+
+# FIM: RC and init.d scripts modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/rc.local -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/rc.local -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/rc.common -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/rc.common -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/init -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/init -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/init.d -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/init.d -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/inittab -F perm=w -F key=fim-initscript
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/inittab -F perm=w -F key=fim-initscript
+
+# FIM: SSH config files or public keys modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/home/ec2-user/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/home/ec2-user/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/home/ubuntu/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/home/ubuntu/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.ssh/authorized_keys -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/ssh/sshd_config -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/ssh/sshd_config -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/ssh/sshd_config.d -F perm=w -F key=fim-sshconfig
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/ssh/sshd_config.d -F perm=w -F key=fim-sshconfig
+
+# FIM: SSH-related binaries modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/usr/bin/scp -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b64 -S openat -S open -F path=/usr/bin/scp -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b32 -S openat -S open -F path=/usr/bin/ssh -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b64 -S openat -S open -F path=/usr/bin/ssh -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b32 -S openat -S open -F path=/usr/bin/sftp -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b64 -S openat -S open -F path=/usr/bin/sftp -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b32 -S openat -S open -F path=/usr/bin/rsync -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b64 -S openat -S open -F path=/usr/bin/rsync -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b32 -S openat -S open -F path=/usr/sbin/sshd -F perm=w -F key=fim-sshbinary
+-a always,exit -F arch=b64 -S openat -S open -F path=/usr/sbin/sshd -F perm=w -F key=fim-sshbinary
+
+# FIM: Cron-related files modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/cron.d -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/cron.d -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/crontab -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/crontab -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/anacrontab -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/anacrontab -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/cron.daily -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/cron.daily -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/cron.hourly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/cron.hourly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/cron.monthly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/cron.monthly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/cron.weekly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/cron.weekly -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/var/at/jobs -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/var/at/jobs -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/var/at/tabs -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/var/at/tabs -F perm=w -F key=fim-cron
+-a always,exit -F arch=b32 -S openat -S open -F dir=/var/spool/cron -F perm=w -F key=fim-cron
+-a always,exit -F arch=b64 -S openat -S open -F dir=/var/spool/cron -F perm=w -F key=fim-cron
+
+# FIM: Systemd-related files modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b32 -S openat -S open -F dir=/lib/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b64 -S openat -S open -F dir=/lib/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b32 -S openat -S open -F dir=/usr/lib/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b64 -S openat -S open -F dir=/usr/lib/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b32 -S openat -S open -F dir=/usr/local/lib/systemd -F perm=w -F key=fim-systemd
+-a always,exit -F arch=b64 -S openat -S open -F dir=/usr/local/lib/systemd -F perm=w -F key=fim-systemd
+
+# FIM: Shell and profile configuration files modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/profile.d -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/profile.d -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/shells -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/shells -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/bashrc -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/bashrc -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/bash.bashrc -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/bash.bashrc -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.bash_profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.bash_profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.bash_login -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.bash_login -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.bash_logout -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.bash_logout -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.profile -F perm=w -F key=fim-profile
+-a always,exit -F arch=b32 -S openat -S open -F path=/root/.bashrc -F perm=w -F key=fim-profile
+-a always,exit -F arch=b64 -S openat -S open -F path=/root/.bashrc -F perm=w -F key=fim-profile
+
+# FIM: Modification or access to shadow files
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/shadow -F perm=wa -F key=fim-shadow
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/shadow -F perm=wa -F key=fim-shadow
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/gshadow -F perm=wa -F key=fim-shadow
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/gshadow -F perm=wa -F key=fim-shadow
+
+# FIM: Sudoers file and includes modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/sudoers -F perm=w -F key=fim-sudoers
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/sudoers -F perm=w -F key=fim-sudoers
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/sudoers.d -F perm=w -F key=fim-sudoers
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/sudoers.d -F perm=w -F key=fim-sudoers
+
+# FIM: Network-related files modification
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/netplan -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/netplan -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/hosts -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/hosts -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/resolv.conf -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/resolv.conf -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/nsswitch.conf -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/nsswitch.conf -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/network/interfaces -F perm=w -F key=fim-netconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/network/interfaces -F perm=w -F key=fim-netconfig
+
+# FIM: Other critical files modification
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/fstab -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/fstab -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/mtab -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/mtab -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/environment -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/environment -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/login.defs -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/login.defs -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F path=/etc/sysctl.conf -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F path=/etc/sysctl.conf -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/sysctl.d -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/sysctl.d -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b32 -S openat -S open -F dir=/etc/security -F perm=w -F key=fim-sysconfig
+-a always,exit -F arch=b64 -S openat -S open -F dir=/etc/security -F perm=w -F key=fim-sysconfig
+
+# ------------------------ Filters: Process Activity ------------------------
+
+# Exec: All ptrace events like those caused by gdb
+-a always,exit -F arch=b32 -S ptrace -F key=exec-ptrace
+-a always,exit -F arch=b64 -S ptrace -F key=exec-ptrace
+
+# Exec: All memfd events seen before in-memory execution
+-a always,exit -F arch=b32 -S memfd_create -F key=exec-memfd
+-a always,exit -F arch=b64 -S memfd_create -F key=exec-memfd
+
+
+# Exec: Execution from temp or shared memory directories
+-a always,exit -F arch=b32 -S execve -S execveat -F dir=/tmp -F key=exec-dropper
+-a always,exit -F arch=b64 -S execve -S execveat -F dir=/tmp -F key=exec-dropper
+-a always,exit -F arch=b32 -S execve -S execveat -F dir=/dev/shm -F key=exec-dropper
+-a always,exit -F arch=b64 -S execve -S execveat -F dir=/dev/shm -F key=exec-dropper
+-a always,exit -F arch=b32 -S execve -S execveat -F dir=/run/shm -F key=exec-dropper
+-a always,exit -F arch=b64 -S execve -S execveat -F dir=/run/shm -F key=exec-dropper
+
+# Exec: Kernel module load as seen in LKM rootkits
+-a always,exit -F arch=b32 -S execve -S execveat -F path=/usr/bin/kmod -F key=exec-rootkit
+-a always,exit -F arch=b64 -S execve -S execveat -F path=/usr/bin/kmod -F key=exec-rootkit
+-a always,exit -F arch=b32 -S execve -S execveat -F path=/usr/bin/insmod -F key=exec-rootkit
+-a always,exit -F arch=b64 -S execve -S execveat -F path=/usr/bin/insmod -F key=exec-rootkit
+
+# Exec: Common recon activity during initial access stage
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/ss -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/ss -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/id -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/id -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/pwd -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/pwd -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/find -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/find -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/last -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/last -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/arp -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/arp -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/uname -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/uname -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/whoami -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/whoami -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/lastlog -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/lastlog -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/netstat -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/netstat -F key=exec-recon
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/hostname -F key=exec-recon
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/hostname -F key=exec-recon
+
+# Exec: Execution of ingress tool transfer utilities
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/wget -F key=exec-transfer
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/wget -F key=exec-transfer
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/curl -F key=exec-transfer
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/curl -F key=exec-transfer
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/ftp -F key=exec-transfer
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/ftp -F key=exec-transfer
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/scp -F key=exec-transfer
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/scp -F key=exec-transfer
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/sftp -F key=exec-transfer
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/sftp -F key=exec-transfer
+
+# Exec: Execution of netcat and socat
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/ncat -F key=exec-netcat
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/ncat -F key=exec-netcat
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/socat -F key=exec-netcat
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/socat -F key=exec-netcat
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/netcat -F key=exec-netcat
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/netcat -F key=exec-netcat
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/nc.openbsd -F key=exec-netcat
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/nc.openbsd -F key=exec-netcat
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/nc.traditional -F key=exec-netcat
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/nc.traditional -F key=exec-netcat
+
+# Exec: Firewalld, ufw, nft, or iptables changes
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/nft -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/nft -F key=exec-firewall
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/ufw -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/ufw -F key=exec-firewall
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/iptables -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/iptables -F key=exec-firewall
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/ip6tables -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/ip6tables -F key=exec-firewall
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/firewall-cmd -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/firewall-cmd -F key=exec-firewall
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/xtables-nft-multi -F key=exec-firewall
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/xtables-nft-multi -F key=exec-firewall
+
+# Exec: Tools to detach process from TTY sesion
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/screen -F key=exec-detach
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/screen -F key=exec-detach
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/tmux -F key=exec-detach
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/tmux -F key=exec-detach
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/nohup -F key=exec-detach
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/nohup -F key=exec-detach
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/setsid -F key=exec-detach
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/setsid -F key=exec-detach
+
+# Exec: Network traffic sniffing utilities
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/nmap -F key=exec-netsniff
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/nmap -F key=exec-netsniff
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/tshark -F key=exec-netsniff
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/tshark -F key=exec-netsniff
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/rawshark -F key=exec-netsniff
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/rawshark -F key=exec-netsniff
+
+# Exec: Data wiping utilities
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/shred -F key=exec-wipe
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/shred -F key=exec-wipe
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/wipe -F key=exec-wipe
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/wipe -F key=exec-wipe
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/scrub -F key=exec-wipe
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/scrub -F key=exec-wipe
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/dd -F key=exec-wipe
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/dd -F key=exec-wipe
+
+# Exec: Archiving software
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/zip -F key=exec-archive
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/zip -F key=exec-archive
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/gzip -F key=exec-archive
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/gzip -F key=exec-archive
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/lzip -F key=exec-archive
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/lzip -F key=exec-archive
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/tar -F key=exec-archive
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/tar -F key=exec-archive
+
+# Exec: Data encoding tools
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/base32 -F key=exec-encode
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/base32 -F key=exec-encode
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/base64 -F key=exec-encode
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/base64 -F key=exec-encode
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/basenc -F key=exec-encode
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/basenc -F key=exec-encode
+
+# Exec: Web servers spawning scripting interpreter, indicating web shell or RCE
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=www-data -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=www-data -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=www-data -F exe=/usr/bin/bash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=www-data -F exe=/usr/bin/bash -F key=exec-webshell
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=zimbra -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=zimbra -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=zimbra -F exe=/usr/bin/bash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=zimbra -F exe=/usr/bin/bash -F key=exec-webshell
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=nginx -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=nginx -F exe=/usr/bin/dash -F key=exec-webshell
+-a always,exit -F arch=b32 -S execve -S execveat -F uid=nginx -F exe=/usr/bin/bash -F key=exec-webshell
+-a always,exit -F arch=b64 -S execve -S execveat -F uid=nginx -F exe=/usr/bin/bash -F key=exec-webshell
+
+# Exec: File owner or permission changes
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/chown -F key=exec-permmod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/chown -F key=exec-permmod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/chmod -F key=exec-permmod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/chmod -F key=exec-permmod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/chgrp -F key=exec-permmod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/chgrp -F key=exec-permmod
+
+# Exec: User-related operations like password change or user creation
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/bin/passwd -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/bin/passwd -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/adduser -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/adduser -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/useradd -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/useradd -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/usermod -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/usermod -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/userdel -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/userdel -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/addgroup -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/addgroup -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/groupadd -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/groupadd -F key=exec-usermod
+-a always,exit -F arch=b32 -S execve -S execveat -F exe=/usr/sbin/groupmod -F key=exec-usermod
+-a always,exit -F arch=b64 -S execve -S execveat -F exe=/usr/sbin/groupmod -F key=exec-usermod
+
+# Exec: Collect all other processes
+# -a always,exit -F arch=b32 -S execve -S execveat -F key=exec
+# -a always,exit -F arch=b64 -S execve -S execveat -F key=exec
+
+# Change to 2 if you want immutable config
+-e 1

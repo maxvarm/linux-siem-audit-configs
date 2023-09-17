@@ -1,0 +1,70 @@
+$ ausearch -i > audit.log
+----
+type=PROCTITLE msg=audit(09/17/2023 17:15:56.661:623) : proctitle=nano /etc/ssh/sshd_config
+type=PATH msg=audit(09/17/2023 17:15:56.661:623) : item=1 name=/etc/ssh/sshd_config inode=787803 dev=08:02 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:15:56.661:623) : item=0 name=/etc/ssh/ inode=786515 dev=08:02 mode=dir,755 ouid=root ogid=root rdev=00:00 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:15:56.661:623) : cwd=/root
+type=SYSCALL msg=audit(09/17/2023 17:15:56.661:623) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x5618dd936830 a2=O_WRONLY|O_CREAT|O_TRUNC a3=0x1b6 items=2 ppid=1908 pid=2517 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=nano exe=/usr/bin/nano subj=unconfined key=fim-sshconfig
+----
+type=PROCTITLE msg=audit(09/17/2023 17:16:32.829:624) : proctitle=crontab -e
+type=PATH msg=audit(09/17/2023 17:16:32.829:624) : item=1 name=crontabs/tmp.vbdRVg inode=1189973 dev=08:02 mode=file,600 ouid=root ogid=crontab rdev=00:00 nametype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:16:32.829:624) : item=0 name=crontabs/ inode=1188442 dev=08:02 mode=dir,sticky,730 ouid=root ogid=crontab rdev=00:00 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:16:32.829:624) : cwd=/var/spool/cron
+type=SYSCALL msg=audit(09/17/2023 17:16:32.829:624) : arch=x86_64 syscall=openat success=yes exit=5 a0=AT_FDCWD a1=0x55e27afb9160 a2=O_RDWR|O_CREAT|O_EXCL a3=0x180 items=2 ppid=1908 pid=2704 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=crontab sgid=crontab fsgid=crontab tty=pts6 ses=5 comm=crontab exe=/usr/bin/crontab subj=unconfined key=fim-cron
+----
+type=PROCTITLE msg=audit(09/17/2023 17:16:58.694:625) : proctitle=nano /etc/netplan/00-installer-config.yaml
+type=PATH msg=audit(09/17/2023 17:16:58.694:625) : item=1 name=/etc/netplan/.00-installer-config.yaml.swp inode=787697 dev=08:02 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:16:58.694:625) : item=0 name=/etc/netplan/ inode=786488 dev=08:02 mode=dir,755 ouid=root ogid=root rdev=00:00 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:16:58.694:625) : cwd=/root
+type=SYSCALL msg=audit(09/17/2023 17:16:58.694:625) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x564144f21860 a2=O_WRONLY|O_CREAT|O_EXCL a3=0x1b6 items=2 ppid=1908 pid=2806 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=nano exe=/usr/bin/nano subj=unconfined key=fim-netconfig
+----
+type=PROCTITLE msg=audit(09/17/2023 17:17:01.298:626) : proctitle=nano /etc/netplan/00-installer-config.yaml
+type=PATH msg=audit(09/17/2023 17:17:01.298:626) : item=1 name=/etc/netplan/.00-installer-config.yaml.swp inode=787697 dev=08:02 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=CREATE cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:17:01.298:626) : item=0 name=/etc/netplan/ inode=786488 dev=08:02 mode=dir,755 ouid=root ogid=root rdev=00:00 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:17:01.298:626) : cwd=/root
+type=SYSCALL msg=audit(09/17/2023 17:17:01.298:626) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x564144f21860 a2=O_WRONLY|O_CREAT|O_EXCL a3=0x1b6 items=2 ppid=1908 pid=2806 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=nano exe=/usr/bin/nano subj=unconfined key=fim-netconfig
+----
+type=PROCTITLE msg=audit(09/17/2023 17:17:03.366:628) : proctitle=nano /etc/netplan/00-installer-config.yaml
+type=PATH msg=audit(09/17/2023 17:17:03.366:628) : item=1 name=/etc/netplan/00-installer-config.yaml inode=793377 dev=08:02 mode=file,644 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:17:03.366:628) : item=0 name=/etc/netplan/ inode=786488 dev=08:02 mode=dir,755 ouid=root ogid=root rdev=00:00 nametype=PARENT cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:17:03.366:628) : cwd=/root
+type=SYSCALL msg=audit(09/17/2023 17:17:03.366:628) : arch=x86_64 syscall=openat success=yes exit=3 a0=AT_FDCWD a1=0x564144f6a0a0 a2=O_WRONLY|O_CREAT|O_TRUNC a3=0x1b6 items=2 ppid=1908 pid=2806 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=nano exe=/usr/bin/nano subj=unconfined key=fim-netconfig
+----
+type=PROCTITLE msg=audit(09/17/2023 17:17:33.210:629) : proctitle=gdb -p 1908
+type=OBJ_PID msg=audit(09/17/2023 17:17:33.210:629) : opid=1908 oauid=superuser ouid=root oses=5 obj=unconfined ocomm=bash
+type=SYSCALL msg=audit(09/17/2023 17:17:33.210:629) : arch=x86_64 syscall=ptrace success=yes exit=0 a0=PTRACE_ATTACH a1=0x774 a2=0x0 a3=0x0 items=0 ppid=1908 pid=3026 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=gdb exe=/usr/bin/gdb subj=unconfined key=exec-ptrace
+----
+type=PROCTITLE msg=audit(09/17/2023 17:17:44.715:642) : proctitle=hostname
+type=PATH msg=audit(09/17/2023 17:17:44.715:642) : item=1 name=/lib64/ld-linux-x86-64.so.2 inode=655755 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:17:44.715:642) : item=0 name=/usr/bin/hostname inode=656087 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:17:44.715:642) : cwd=/root
+type=EXECVE msg=audit(09/17/2023 17:17:44.715:642) : argc=1 a0=hostname
+type=SYSCALL msg=audit(09/17/2023 17:17:44.715:642) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561ee025fe60 a1=0x561ee028b9d0 a2=0x561ee024fa10 a3=0x8 items=2 ppid=1908 pid=3138 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=hostname exe=/usr/bin/hostname subj=unconfined key=exec-recon
+----
+type=PROCTITLE msg=audit(09/17/2023 17:17:48.551:643) : proctitle=uname -a
+type=PATH msg=audit(09/17/2023 17:17:48.551:643) : item=1 name=/lib64/ld-linux-x86-64.so.2 inode=655755 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:17:48.551:643) : item=0 name=/usr/bin/uname inode=656545 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:17:48.551:643) : cwd=/root
+type=EXECVE msg=audit(09/17/2023 17:17:48.551:643) : argc=2 a0=uname a1=-a
+type=SYSCALL msg=audit(09/17/2023 17:17:48.551:643) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561ee028ba70 a1=0x561ee028b090 a2=0x561ee024fa10 a3=0x8 items=2 ppid=1908 pid=3143 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=uname exe=/usr/bin/uname subj=unconfined key=exec-recon
+----
+type=PROCTITLE msg=audit(09/17/2023 17:18:07.111:644) : proctitle=wget http://1.1.1.1
+type=PATH msg=audit(09/17/2023 17:18:07.111:644) : item=1 name=/lib64/ld-linux-x86-64.so.2 inode=655755 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:18:07.111:644) : item=0 name=/usr/bin/wget inode=656591 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:18:07.111:644) : cwd=/root
+type=EXECVE msg=audit(09/17/2023 17:18:07.111:644) : argc=2 a0=wget a1=http://1.1.1.1
+type=SYSCALL msg=audit(09/17/2023 17:18:07.111:644) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561ee028ad10 a1=0x561ee028bad0 a2=0x561ee024fa10 a3=0x8 items=2 ppid=1908 pid=3196 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=wget exe=/usr/bin/wget subj=unconfined key=exec-transfer
+----
+type=PROCTITLE msg=audit(09/17/2023 17:18:26.364:645) : proctitle=base64 hello world
+type=PATH msg=audit(09/17/2023 17:18:26.364:645) : item=1 name=/lib64/ld-linux-x86-64.so.2 inode=655755 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:18:26.364:645) : item=0 name=/usr/bin/base64 inode=655872 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:18:26.364:645) : cwd=/root
+type=EXECVE msg=audit(09/17/2023 17:18:26.364:645) : argc=2 a0=base64 a1=hello world
+type=SYSCALL msg=audit(09/17/2023 17:18:26.364:645) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561ee028bd20 a1=0x561ee0250090 a2=0x561ee024fa10 a3=0x8 items=2 ppid=1908 pid=3269 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=base64 exe=/usr/bin/base64 subj=unconfined key=exec-encode
+----
+type=PROCTITLE msg=audit(09/17/2023 17:19:34.565:649) : proctitle=./malware
+type=PATH msg=audit(09/17/2023 17:19:34.565:649) : item=1 name=/lib64/ld-linux-x86-64.so.2 inode=655755 dev=08:02 mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=PATH msg=audit(09/17/2023 17:19:34.565:649) : item=0 name=./malware inode=3 dev=00:1a mode=file,755 ouid=root ogid=root rdev=00:00 nametype=NORMAL cap_fp=none cap_fi=none cap_fe=0 cap_fver=0 cap_frootid=0
+type=CWD msg=audit(09/17/2023 17:19:34.565:649) : cwd=/dev/shm
+type=EXECVE msg=audit(09/17/2023 17:19:34.565:649) : argc=1 a0=./malware
+type=SYSCALL msg=audit(09/17/2023 17:19:34.565:649) : arch=x86_64 syscall=execve success=yes exit=0 a0=0x561ee028bca0 a1=0x561ee028bf60 a2=0x561ee024fa10 a3=0x8 items=2 ppid=1908 pid=3496 auid=superuser uid=root gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root tty=pts6 ses=5 comm=malware exe=/dev/shm/malware subj=unconfined key=exec-dropper

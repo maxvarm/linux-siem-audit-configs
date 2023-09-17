@@ -1,0 +1,436 @@
+# ------------------------ Filters: File Integrity ------------------------
+
+- macro: open_write
+  condition: evt.type in (open,openat,openat2) and evt.is_open_write=true and fd.typechar='f' and fd.num>=0
+
+
+- rule: fim-authmodule
+  desc: Pam.d auth modules modification
+  condition: >
+    open_write and fd.name startswith /etc/pam.d/
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-rootkit
+  desc: Rootkit-related file modification
+  condition: >
+    open_write and fd.name = /etc/ld.so.preload
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-bootkit
+  desc: Grub or EFI modification
+  condition: >
+    open_write and (
+      fd.name startswith /boot/efi/ or
+      fd.name startswith /etc/grub.d/ or
+      fd.name = /etc/default/grub)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-ldconfig
+  desc: Library search paths changes
+  condition: >
+    open_write and (
+      fd.name startswith /etc/ld.so.conf.d/ or
+      fd.name = /etc/ld.so.conf)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-initmsg
+  desc: Motd or greeting text modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/update-motd.d/ or
+      fd.name in (/etc/motd, /etc/issue, /etc/issue.net))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-initscript
+  desc: RC and init.d scripts modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/init.d/ or
+      fd.name startswith /etc/init/ or
+      fd.name in (/etc/inittab, /etc/rc.common, /etc/rc.local))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-sshconfig
+  desc: SSH config files or public keys modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/ssh/sshd_config.d/ or
+      fd.name glob "/home/*/.ssh/authorized_keys" or
+      fd.name in (/root/.ssh/authorized_keys, /etc/ssh/sshd_config))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-sshbinary
+  desc: SSH-related binaries modification
+  condition: >
+    open_write and fd.name in (
+      /usr/bin/scp, /usr/bin/ssh, /usr/bin/scp, /usr/bin/sftp,
+      /usr/bin/rsync, /usr/bin/sshd)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-cron
+  desc: Cron-related files modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/cron.d/ or
+      fd.name startswith /var/spool/cron/ or
+      fd.name startswith /var/at/tabs/ or
+      fd.name startswith /var/at/jobs/ or
+      fd.name startswith /etc/cron. or
+      fd.name in (/etc/anacrontab, /etc/crontab))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-systemd
+  desc: Systemd-related files modification
+  condition: >
+    open_write and fd.name endswith ".service" and (
+      fd.name startswith /etc/systemd/ or
+      fd.name startswith /lib/systemd/ or
+      fd.name startswith /usr/lib/systemd/ or
+      fd.name startswith /usr/local/lib/systemd/)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-profile
+  desc: Shell and profile configuration files modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/profile.d/ or
+      fd.name in (/etc/shells, /etc/bashrc, /etc/profile, /etc/bash.bashrc) or (
+        fd.filename in (.bashrc, .profile, .bash_login, .bash_logout, .bash_profile) and
+        (fd.name startswith /root/ or fd.name startswith /home/))
+      )
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-shadow
+  desc: Modification or access to shadow files
+  condition: >
+    open_write and fd.name in (/etc/shadow, /etc/gshadow)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-sudoers
+  desc: Sudoers file and includes modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/sudoers.d/ or
+      fd.name = /etc/sudoers)
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-netconfig
+  desc: Network-related files modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/netplan/ or
+      fd.name startswith  /etc/sysctl.d/ or
+      fd.name in (/etc/hosts, /etc/sysctl.conf,
+      /etc/resolv.conf, /etc/nsswitch.conf, /etc/network/interfaces))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+
+- rule: fim-sysconfig
+  desc: Other critical files modification
+  condition: >
+    open_write and (
+      fd.name startswith /etc/security/ or
+      fd.name in (/etc/login.defs, /etc/environment, /etc/mtab, /etc/fstab))
+  output: >
+    %user.uid %user.name %fd.name %container.id %container.name %container.image
+    %proc.tty %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath
+  priority:
+    NOTICE
+  tags: [fim, custom]
+
+# ------------------------ Filters: Process Activity ------------------------
+
+- macro: exec
+  condition: (evt.type in (execve, execveat) and evt.dir=<)
+
+
+- rule: exec-ptrace
+  desc: All ptrace events like those caused by gdb
+  condition: >
+    evt.type = ptrace and evt.dir = <
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-memfd
+  desc: All memfd events seen before in-memory execution
+  condition: >
+    evt.type = memfd_create and evt.dir = <
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-dropper
+  desc: Execution from temp or shared memory directories
+  condition: >
+    exec and (
+      proc.exepath startswith "/dev/shm/" or
+      proc.exepath startswith "/run/shm/" or
+      proc.exepath startswith "/tmp/")
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-rootkit
+  desc: Kernel module load as seen in LKM rootkits
+  condition: >
+    exec and proc.name = insmod
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-recon
+  desc: Common recon activity during initial access stage
+  condition: >
+    exec and proc.name in (
+        ss, id, pwd, find, last, arp, uname,
+        whoami, lastlog, netstat, hostname)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-transfer
+  desc: Execution of ingress tool transfer utilities
+  condition: >
+    exec and proc.name in (wget, curl, ftp, scp, sftp)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-netcat
+  desc: Execution of netcat and socat
+  condition: >
+    exec and proc.name in (ncat, socat, netcat, nc.openbsd, nc.traditional, nc)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-firewall
+  desc: Firewalld, ufw, nft, or iptables changes
+  condition: >
+    exec and proc.name in (nft, ufw, iptables, ip6tables, firewall-cmd, xtables-nft-multi)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-detach
+  desc: Tools to detach process from TTY sesion
+  condition: >
+    exec and proc.name in (screen, tmux, nohup, setsid)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-netsniff
+  desc: Network traffic sniffing utilities
+  condition: >
+    exec and proc.name in (nmap, tshark, rawshark)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-wipe
+  desc: Data wiping utilities
+  condition: >
+    exec and proc.name in (shred, wipe, scrub, dd)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-archive
+  desc: Archiving software
+  condition: >
+    exec and proc.name in (zip, gzip, lzip, tar)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-encode
+  desc: Data encoding tools
+  condition: >
+    exec and proc.name in (base32, base64, basenc)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-webshell
+  desc: Web servers spawning scripting interpreter, indicating web shell or RCE
+  condition: >
+    exec and user.name in (www-data, nginx, zimbra) and proc.name in (dash, bash, sh, zsh)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-permmod
+  desc: File owner or permission changes
+  condition: >
+    exec and proc.name in (chown, chmod, chgrp)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+- rule: exec-usermod
+  desc: User-related operations like password change or user creation
+  condition: >
+    exec and proc.name in (passwd, adduser, useradd, usermod, userdel, addgroup, groupadd, groupmod)
+  output: >
+    %user.uid %user.name %proc.tty %container.id %container.name %container.image
+    %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+  priority:
+    NOTICE
+  tags: [exec, custom]
+
+
+# - rule: exec
+#   desc: Collect all other processes
+#   condition: >
+#     exec
+#   output: >
+#     %user.uid %user.name %proc.tty %container.id %container.name %container.image
+#     %proc.pid %proc.cwd %proc.exepath %proc.cmdline %proc.ppid %proc.pexepath %proc.pcmdline
+#   priority:
+#     NOTICE
+#   tags: [exec, custom]
